@@ -4,7 +4,7 @@
   "description": "Makes one developer's Claude Code setup the whole team's. Pins the toolchain, gates the writes that would drift, and commits the shared context so a fresh clone already has it.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://oneamitj.github.io/comind/",
+  "homepage": "https://amitj.me/comind/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oneamitj/comind.git"
