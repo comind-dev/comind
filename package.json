@@ -1,9 +1,17 @@
 {
   "name": "comind",
   "version": "0.0.1-alpha.0",
-  "description": "CoMind (Collaborative Mind) \u2014 drop-in AI team collaboration framework. One command wires RTK compression, Caveman output profile, GSD phase discipline, graphify knowledge graph, and first-party LSP verification for 12 languages into a shared, Git-tracked brain.",
+  "description": "Makes one developer's Claude Code setup the whole team's. Pins the toolchain, gates the writes that would drift, and commits the shared context so a fresh clone already has it.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://oneamitj.github.io/comind/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oneamitj/comind.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oneamitj/comind/issues"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -32,6 +40,7 @@
     "team"
   ],
   "scripts": {
+    "prepublishOnly": "node --test test/*.test.mjs",
     "test": "node --test test/*.test.mjs",
     "init": "node bin/comind.js",
     "doctor": "node bin/comind.js doctor"

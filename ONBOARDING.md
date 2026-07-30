@@ -1,7 +1,8 @@
 # Onboarding
 
-> **0.0.1-alpha.0, unreleased and in active development.** The commands below assume CoMind is
-> published. Until it is, replace `npx -y comind@latest` with `node <checkout>/bin/comind.js --local`.
+> **0.0.1-alpha.0, an alpha in active development.** The commands below work against the published
+> package. To run a local checkout instead, swap `npx -y comind@latest` for
+> `node <checkout>/bin/comind.js --local`.
 
 There are two paths. Read the one that describes you and skip the other.
 

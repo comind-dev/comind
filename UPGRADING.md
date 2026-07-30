@@ -18,10 +18,10 @@ The floor still answers *"is this already installed?"*, which is the load-bearin
 version predicate every setup reinstalls, and a gsd-core reinstall rewrites its manifest with a
 fresh timestamp. A second run would dirty the repo and the byte-identical invariant would die.
 
-> **CoMind's own version is frozen at `0.0.1-alpha.0` until the first release.** Nothing is
-> published, so there is no version anyone could be upgrading *from*. Do not bump it for ordinary
-> changes, and do not add migration code for a version that never shipped. This document is about
-> the tools CoMind installs, not about CoMind itself.
+> **CoMind's own version moves only in a release commit.** `0.0.1-alpha.0` is what's published, and
+> a test pins that number, so a bump is always deliberate. Most of this document is about the tools
+> CoMind installs rather than about CoMind itself; the release runbook is at the bottom, under
+> [Releasing](#releasing).
 
 ## The two contracts
 
@@ -174,30 +174,49 @@ be listed at all, before any external extractor sees it.
 If you need a stronger guarantee, pin a commit rather than a tag and verify the checksum
 out-of-band against a value you obtained yourself.
 
-## Before the first release
+## Releasing
 
-Publication turns on two things that are inert today:
+CoMind ships through two channels at once, and they are independent. **npm** carries the CLI, which
+is what `npx -y comind@latest` runs. **The GitHub repo itself is the plugin marketplace**, read
+straight from `.claude-plugin/marketplace.json` on the default branch. There is no plugin registry
+to publish to, which has one consequence worth internalising: the marketplace side of a release is
+just a push, so the repo has to be public and the default branch has to be the version you mean.
 
-- **`npx comind` works from the registry.** Until then, install from a checkout with
-  `node bin/comind.js --local`, which adds this directory as a local marketplace.
-- **The project-scope plugin declaration lands in `.claude/settings.json`,** so a teammate who
-  clones a CoMind repo gets `/comind-init` without installing anything. `declareProjectPlugin`
-  refuses to write a local checkout path, because that path would be committed and then fail to
-  resolve on every other machine.
-
-When you release, bump the version in **three** places, which must agree: `versions.json`
-(`comind`), `package.json`, and `.claude-plugin/plugin.json`. A test enforces the agreement.
+Bump the version in **three** places, which must agree: `versions.json` (`comind`),
+`package.json`, and `.claude-plugin/plugin.json`. A test enforces the agreement, and a second test
+pins the current number, so the bump also means editing `test/install.test.mjs`. That is on purpose.
+A version should never move as a side effect.
 
 Keep it valid semver. npm's registry refuses anything else, and an `alpha-vX.Y.Z` style string is
 not semver. Prereleases are fine: verified that `claude plugin` accepts `0.0.1-alpha.0` and reports
 it as-is.
 
 ```bash
-claude plugin tag .              # validates plugin.json against the marketplace entry
-node bin/comind.js --local       # install from this checkout
+npm test                         # green, and prepublishOnly runs it again
+claude plugin validate .         # manifests parse and agree
+npm publish --dry-run            # read the file list it prints, then the exit code
+npm publish                      # no --tag: the alpha becomes `latest`
+git tag -a v0.0.1-alpha.0 -m 'v0.0.1-alpha.0' && git push --tags
+```
+
+`npm publish` takes **no `--tag`** deliberately. `npx -y comind@latest` is baked into
+`lib/platform.mjs` (`FIX.stage1`), into the committed manifest note in `lib/detect.mjs`, and into
+three command docs, so publishing under `--tag alpha` would leave `comind@latest` unresolvable and
+break every one of those strings. If you ever do want `latest` held back for a stable line, change
+those five strings first.
+
+Then verify the published artifact rather than trusting the upload:
+
+```bash
+env -i HOME=$(mktemp -d) PATH="$PATH" npx -y comind@latest --version
+claude plugin marketplace add oneamitj/comind
+claude plugin install comind@comind
 claude plugin list               # Status ✔ enabled
 claude plugin details comind     # Commands = the 4 in commands/comind/; Hooks = 0
 ```
+
+The clean `HOME` matters. A machine that already has CoMind installed will report success no matter
+what got published.
 
 Hooks must read **0**. The gate is project-scoped and copied into the consuming repo, never shipped
 as a plugin hook. The command count comes from the directory, so adding a fifth command needs no

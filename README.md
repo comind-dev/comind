@@ -1,8 +1,8 @@
 # CoMind: Collaborative Mind
 
-> **0.0.1-alpha.0, unreleased and still moving.** Nothing is published yet, so install from a
-> checkout (see [Development](#development)). The install contract and the `.ai-memory/` vault
-> schema both still change. For the step-by-step version, read [ONBOARDING.md](ONBOARDING.md).
+> **0.0.1-alpha.0 is on npm, and it's an alpha.** The install contract and the `.ai-memory/` vault
+> schema can still change between alphas, so expect to re-run `/comind-init` after an upgrade. For
+> the step-by-step version, read [ONBOARDING.md](ONBOARDING.md).
 
 CoMind wires five compression and discipline layers into a repo you already have, then tells you
 exactly which files to commit so the whole team works from one shared context.
@@ -10,15 +10,15 @@ exactly which files to commit so the whole team works from one shared context.
 ## Two stages, on purpose
 
 ```bash
-node bin/comind.js --local   # stage 1: install CoMind. Your repo is not touched.
+npx comind          # stage 1: install CoMind. Your repo is not touched.
 ```
-
-> The intended stage-1 command is `npx comind`, and that is what the rest of this document says.
-> It is not on npm yet. Until it is, use the line above.
 
 ```
 /comind-init        # stage 2: set up the project. Run inside Claude Code.
 ```
+
+> Working from a clone instead of the registry? `node bin/comind.js --local` replaces stage 1 and
+> adds the checkout as a local marketplace. Everything after that is the same.
 
 **Stage 1 installs nothing but CoMind itself.** It registers CoMind as a Claude Code plugin, which
 is what gets you `claude plugin update / uninstall / disable / details` and a real version
@@ -257,16 +257,16 @@ node bin/comind.js uninstall          # remove plugin + marketplace + fallback a
 
 ### Versioning
 
-**Frozen at `0.0.1-alpha.0` until the first release.** Nothing is published, so there's no version
-anyone could be upgrading from. Don't bump it for ordinary changes, and don't add migration code
-for a version that never shipped.
+**The version moves only in a release commit.** `0.0.1-alpha.0` is what's on npm. Ordinary changes
+don't bump it, and a bump is not a side effect of anything: `test/install.test.mjs` pins the current
+number, so releasing means editing that test on purpose.
 
 One form, everywhere: `versions.json` `comind`, `package.json`, `plugin.json`, the committed
 manifest, install stamps, and every rendered line. It has to stay valid semver, because npm's
 registry rejects anything else and drift detection compares versions by ordering. Tests enforce the
 semver shape, the freeze, and agreement across all three manifests.
 
-Release steps are in [UPGRADING.md](UPGRADING.md#before-the-first-release).
+Release steps are in [UPGRADING.md](UPGRADING.md#releasing).
 
 Three invariants to protect:
 
