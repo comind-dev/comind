@@ -10,7 +10,7 @@ exactly which files to commit so the whole team works from one shared context.
 ## Two stages, on purpose
 
 ```bash
-npx comind          # stage 1: install CoMind. Your repo is not touched.
+npx @comind-dev/comind   # stage 1: install CoMind. Your repo is not touched.
 ```
 
 ```
@@ -67,8 +67,7 @@ follows them. Worth knowing before you rely on any of it.
 
 ## What gets installed where
 
-The split is the whole design, and it's why `npx comind` is safe to run again and again on any
-machine.
+The split is the whole design, and it's why stage 1 is safe to run again and again on any machine.
 
 **Committed. The shared brain, identical for everyone.**
 
@@ -150,7 +149,7 @@ The CLI underneath, which the slash commands invoke:
 
 | Command | Stage |
 | --- | --- |
-| `npx comind` | 1: install CoMind as a plugin, wire slash commands. Repo-safe. |
+| `npx @comind-dev/comind` | 1: install CoMind as a plugin, wire slash commands. Repo-safe. |
 | `comind setup` | 2: the mechanical half. Tools, hooks, ignores, LSP plugins, manifest. |
 | `comind lsp` | Show LSP status; install or remove a language's plugin. |
 | `comind sync` | Regenerate `.ai-memory/`. |
@@ -187,7 +186,7 @@ built-ins only; `bin/comind-init.sh` and `bin/comind-init.ps1` are two-line wrap
 | --- | --- | --- | --- |
 | Status | supported, tested | supported, tested | **not yet, see below** |
 | rtk binary | arm64 / x64 prebuilt | x64 prebuilt (musl); arm64 prebuilt (glibc). musl arm64 builds from source via cargo | |
-| Entry point | `npx comind` | `npx comind` | |
+| Entry point | `npx @comind-dev/comind` | `npx @comind-dev/comind` | |
 | Hooks | `node …mjs` | `node …mjs` | |
 
 **Windows is not supported yet.** The code carries win32 paths throughout (PATHEXT resolution,

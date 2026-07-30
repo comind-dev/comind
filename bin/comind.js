@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // CoMind installer.
 //
-// Node built-ins only, zero npm dependencies, so `npx comind` needs no install
+// Node built-ins only, zero npm dependencies, so `npx @comind-dev/comind` needs no install
 // step. The .sh and .ps1 files next to this one are two-line wrappers that exec
 // straight into here.
 //
@@ -72,7 +72,7 @@ comind — Collaborative Mind. Team-shared AI context for Claude Code.
 
 CoMind installs in two stages, on purpose:
 
-  STAGE 1  npx comind          Installs CoMind itself. Touches nothing in your
+  STAGE 1  npx @comind-dev/comind          Installs CoMind itself. Touches nothing in your
                                repo. Makes /comind-init available in Claude Code.
 
   STAGE 2  /comind-init        Sets up a project. Run it inside a Claude Code

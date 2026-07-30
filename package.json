@@ -1,6 +1,9 @@
 {
-  "name": "comind",
+  "name": "@comind-dev/comind",
   "version": "0.0.1-alpha.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Makes one developer's Claude Code setup the whole team's. Pins the toolchain, gates the writes that would drift, and commits the shared context so a fresh clone already has it.",
   "type": "module",
   "license": "MIT",

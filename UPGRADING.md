@@ -177,10 +177,17 @@ out-of-band against a value you obtained yourself.
 ## Releasing
 
 CoMind ships through two channels at once, and they are independent. **npm** carries the CLI, which
-is what `npx -y comind@latest` runs. **The GitHub repo itself is the plugin marketplace**, read
-straight from `.claude-plugin/marketplace.json` on the default branch. There is no plugin registry
-to publish to, which has one consequence worth internalising: the marketplace side of a release is
-just a push, so the repo has to be public and the default branch has to be the version you mean.
+is what `npx -y @comind-dev/comind@latest` runs. **The GitHub repo itself is the plugin
+marketplace**, read straight from `.claude-plugin/marketplace.json` on the default branch. There is
+no plugin registry to publish to, which has one consequence worth internalising: the marketplace
+side of a release is just a push, so the repo has to be public and the default branch has to be the
+version you mean.
+
+The npm package is scoped, and the reason is worth recording. `comind` was refused by the registry:
+`403 Package name too similar to existing package comlink`. Normalized, `comind` is two edits from
+`comlink`, which has millions of weekly downloads. That similarity check applies to unscoped names
+only, so the scope sidesteps it and the package keeps the name. `@anthropic-ai/claude-code`,
+`@continuedev/cli` and `@augmentcode/auggie` all exist for the same reason.
 
 Bump the version in **three** places, which must agree: `versions.json` (`comind`),
 `package.json`, and `.claude-plugin/plugin.json`. A test enforces the agreement, and a second test
@@ -195,20 +202,26 @@ it as-is.
 npm test                         # green, and prepublishOnly runs it again
 claude plugin validate .         # manifests parse and agree
 npm publish --dry-run            # read the file list it prints, then the exit code
-npm publish                      # no --tag: the alpha becomes `latest`
+npm publish --tag alpha
+npm dist-tag add @comind-dev/comind@0.0.1-alpha.0 latest
 git tag -a v0.0.1-alpha.0 -m 'v0.0.1-alpha.0' && git push --tags
 ```
 
-`npm publish` takes **no `--tag`** deliberately. `npx -y comind@latest` is baked into
-`lib/platform.mjs` (`FIX.stage1`), into the committed manifest note in `lib/detect.mjs`, and into
-three command docs, so publishing under `--tag alpha` would leave `comind@latest` unresolvable and
-break every one of those strings. If you ever do want `latest` held back for a stable line, change
-those five strings first.
+**Both npm lines are required, and the second one is the easy one to forget.** npm refuses to
+publish a prerelease without an explicit tag: *"You must specify a tag using --tag when publishing a
+prerelease version."* So `--tag alpha` is not a choice. But `npx -y @comind-dev/comind@latest` is
+baked into `lib/platform.mjs` (`FIX.stage1`), into the committed manifest note in `lib/detect.mjs`,
+and into three command docs, and `--tag alpha` alone leaves `latest` pointing at nothing. The
+`dist-tag add` is what makes those five strings resolve. Skip it and every remediation message
+in the product names a version that does not exist.
+
+`--dry-run` will not catch a name problem. The similarity check and the tag rule both run
+server-side, which is how this package got a clean dry run and then a 403.
 
 Then verify the published artifact rather than trusting the upload:
 
 ```bash
-env -i HOME=$(mktemp -d) PATH="$PATH" npx -y comind@latest --version
+env -i HOME=$(mktemp -d) PATH="$PATH" npx -y @comind-dev/comind@latest --version
 claude plugin marketplace add oneamitj/comind
 claude plugin install comind@comind
 claude plugin list               # Status ✔ enabled

@@ -42,7 +42,7 @@ manifest names rather than upgrading the repo unilaterally. Upgrading the shared
 a deliberate, committed change (see `UPGRADING.md`).
 
 **A tool version WARN** — locally installed version differs from the pin. `/comind-init` (stage 2)
-converges it. Stage 1 (`npx -y comind@latest`) installs CoMind only and no tools, so it cannot fix
+converges it. Stage 1 (`npx -y @comind-dev/comind@latest`) installs CoMind only and no tools, so it cannot fix
 this. If it recurs, something else on the machine is managing that tool (Homebrew, a global npm
 install) and should be removed.
 

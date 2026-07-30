@@ -1,7 +1,7 @@
 # Onboarding
 
 > **0.0.1-alpha.0, an alpha in active development.** The commands below work against the published
-> package. To run a local checkout instead, swap `npx -y comind@latest` for
+> package. To run a local checkout instead, swap `npx -y @comind-dev/comind@latest` for
 > `node <checkout>/bin/comind.js --local`.
 
 There are two paths. Read the one that describes you and skip the other.
@@ -56,7 +56,7 @@ inherits it.
 This touches **nothing** in your repo. It only makes CoMind available to Claude Code.
 
 ```bash
-npx -y comind@latest
+npx -y @comind-dev/comind@latest
 ```
 
 Expected: `COMIND 0.0.1-alpha.0 INSTALLED — nothing in your repo was touched`, and
@@ -137,7 +137,7 @@ Your setup must leave every tracked file untouched.
 ### 1. Install CoMind (stage 1)
 
 ```bash
-npx -y comind@latest
+npx -y @comind-dev/comind@latest
 ```
 
 > **You may not need this step.** If the first developer committed the project-scope plugin
@@ -332,7 +332,7 @@ Restart Claude Code. Plugins load at session start.
 ## Removing CoMind
 
 ```bash
-npx -y comind@latest uninstall
+npx -y @comind-dev/comind@latest uninstall
 ```
 
 That removes CoMind: the plugin, its marketplace entry, and any fallback artifacts. It **prints but

@@ -5,7 +5,7 @@ description: Set up CoMind in this repo. Auto-detects first-time setup vs joinin
 
 # /comind-init
 
-**This command owns the entire setup.** Stage 1 (`npx -y comind@latest`) only made CoMind available to Claude
+**This command owns the entire setup.** Stage 1 (`npx -y @comind-dev/comind@latest`) only made CoMind available to Claude
 Code — it deliberately touched nothing. Everything real happens here, because onboarding needs
 a reasoning agent: mapping the codebase and capturing project intent cannot be done by a shell
 script.
@@ -133,7 +133,7 @@ CLI at install time) it is substituted with an absolute path. If it reaches the 
 neither happened — re-run stage 1:
 
 ```bash
-npx -y comind@latest
+npx -y @comind-dev/comind@latest
 ```
 
 Then check which mechanism installed it:

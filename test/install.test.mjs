@@ -1,4 +1,4 @@
-// Stage 1 (`npx comind`) has exactly one safety property that matters: it must
+// Stage 1 (`npx @comind-dev/comind`) has exactly one safety property that matters: it must
 // never write into the target repository. Project setup is stage 2's job, run
 // from a Claude Code session. These tests pin that boundary.
 
@@ -254,12 +254,13 @@ function walkFiles(dir, exts, acc = []) {
 }
 
 test('no remediation string names a command that cannot perform the fix', () => {
-  // The regression this guards: the two-stage split made `npx comind` install-only,
+  // The regression this guards: the two-stage split made `npx @comind-dev/comind` install-only,
   // but 19 places still offered it as the fix for missing tools, hooks, and
   // .mcp.json. A user follows the advice, nothing changes, the check still fails.
   //
-  // Bare `npx comind` must not appear as a fix string. Stage-1 repairs use
-  // FIX.stage1 (`npx -y comind@latest`); everything else routes through FIX.setup.
+  // An unqualified `npx @comind-dev/comind` must not appear as a fix string. Stage-1
+  // repairs use FIX.stage1 (`npx -y @comind-dev/comind@latest`); everything else
+  // routes through FIX.setup.
   //
   // templates/ and commands/ are scanned too: the previous version of this guard
   // read three lib files only, and offenders survived in a slash-command doc and
@@ -272,12 +273,14 @@ test('no remediation string names a command that cannot perform the fix', () => 
       .forEach((line, i) => {
         if (!isProse && (line.trimStart().startsWith('*') || line.trimStart().startsWith('//'))) return;
         // Prose shipped INTO a repo (templates/) or read by the agent
-        // (commands/) gets zero tolerance for the bare form: every reference
-        // must use the canonical stage-1 spelling `npx -y comind@latest`, which
-        // cannot be mistaken for something that installs tools. A keyword-
-        // proximity rule was tried and could not match the real offenders,
-        // which all put the verb BEFORE the mention or on the previous line.
-        const re = isProse ? /\bnpx comind\b(?!@)/ : /['"`][^'"`]*\bnpx comind\b(?!@)/;
+        // (commands/) gets zero tolerance for the unqualified form: every
+        // reference must use the canonical stage-1 spelling
+        // `npx -y @comind-dev/comind@latest`, which cannot be mistaken for
+        // something that installs tools. A keyword-proximity rule was tried and
+        // could not match the real offenders, which all put the verb BEFORE the
+        // mention or on the previous line.
+        const BARE = String.raw`\bnpx\s+(?:-y\s+)?@comind-dev/comind\b(?!@)`;
+        const re = isProse ? new RegExp(BARE) : new RegExp(`['"\`][^'"\`]*${BARE}`);
         if (re.test(line)) offenders.push(`${rel}:${i + 1}`);
       });
   };
@@ -286,7 +289,11 @@ test('no remediation string names a command that cannot perform the fix', () => 
   }
   for (const abs of walkFiles(path.join(PKG, 'templates'), ['.md', '.block', '.json'])) scan(abs, true);
   for (const abs of walkFiles(path.join(PKG, 'commands'), ['.md'])) scan(abs, true);
-  assert.deepEqual(offenders, [], `bare "npx comind" offered as a stage-2 fix at ${offenders.join(', ')}`);
+  assert.deepEqual(
+    offenders,
+    [],
+    `unqualified "npx @comind-dev/comind" offered as a stage-2 fix at ${offenders.join(', ')}`,
+  );
 });
 
 test('the MIT license claim ships with the license text', () => {
@@ -303,7 +310,7 @@ test('the MIT license claim ships with the license text', () => {
 
 test('every doctor fix is a real, runnable instruction', () => {
   // Not asserting exact strings — asserting that each fix names one of the three
-  // commands, a specific tool CLI, or a slash command. A fix of "npx comind" for a
+  // commands, a specific tool CLI, or a slash command. A fix of "npx @comind-dev/comind" for a
   // missing rtk binary passes a naive string check but is still wrong.
   const body = readFileSync(path.join(PKG, 'lib', 'doctor.mjs'), 'utf8');
   assert.ok(body.includes('FIX.setup'), 'tool checks must route through FIX.setup');
@@ -323,9 +330,10 @@ test('nothing in the shipped code resolves a version at install time', () => {
         readFileSync(p, 'utf8')
           .split('\n')
           .forEach((line, i) => {
-            // `comind@latest` is the one legitimate use: telling a developer how to
-            // reinstall CoMind itself, which is not a pinned dependency.
-            if (/@latest/.test(line) && !/comind@latest/.test(line)) {
+            // `@comind-dev/comind@latest` is the one legitimate use: telling a
+            // developer how to reinstall CoMind itself, which is not a pinned
+            // dependency.
+            if (/@latest/.test(line) && !/@comind-dev\/comind@latest/.test(line)) {
               offenders.push(`${path.relative(PKG, p)}:${i + 1}`);
             }
           });

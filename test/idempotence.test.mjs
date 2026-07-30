@@ -1,5 +1,5 @@
 // Idempotence is the property the whole design rests on: a teammate must be able
-// to run `npx comind` repeatedly without dirtying the repo. These tests pin the
+// to run `npx @comind-dev/comind` repeatedly without dirtying the repo. These tests pin the
 // mechanism that guarantees it — sentinel-block patching — plus the git-semantics
 // of the generated ignore rules and the LSP detection table.
 
