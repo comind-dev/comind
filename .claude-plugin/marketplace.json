@@ -4,7 +4,7 @@
   "description": "Team-shared AI context for Claude Code. Everyone works from the same pinned tools and the same committed context, instead of each developer rebuilding it in their own session.",
   "owner": {
     "name": "CoMind",
-    "url": "https://github.com/oneamitj/comind"
+    "url": "https://github.com/comind-dev/comind"
   },
   "plugins": [
     {

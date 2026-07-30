@@ -5,10 +5,10 @@
   "description": "Team-shared AI context. One command pins RTK, Caveman, GSD phase discipline, graphify and LSP verification for 12 languages, then tells you which files to commit.",
   "author": {
     "name": "CoMind",
-    "url": "https://github.com/oneamitj/comind"
+    "url": "https://github.com/comind-dev/comind"
   },
-  "homepage": "https://github.com/oneamitj/comind",
-  "repository": "https://github.com/oneamitj/comind",
+  "homepage": "https://github.com/comind-dev/comind",
+  "repository": "https://github.com/comind-dev/comind",
   "license": "MIT",
   "keywords": [
     "context-engineering",

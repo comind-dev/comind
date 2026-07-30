@@ -6,7 +6,7 @@
   "_policyNote": "`policy` decides how strictly a version is held. \"exact\" for anything whose divergence corrupts the SHARED repo: rtk is a binary CoMind executes, gsd-core writes committed files, caveman installs hooks into ~/.claude. \"floor\" (>=) for machine-local tools whose output is derived — nobody's repo changes because a teammate has a newer graphify, and an exact pin there is a maintenance treadmill that buys nothing. Absent means exact.",
   "distribution": {
     "_note": "How CoMind installs itself. The plugin path is primary because it gives uninstall, update, enable/disable, and a version registry for free; the file-copy fallback exists only for machines without the `claude` CLI. `marketplace add` accepts a URL, a path, or a GitHub repo: `--local` installs from this checkout (PKG_ROOT) and COMIND_MARKETPLACE overrides the source for a fork.",
-    "marketplace": "oneamitj/comind",
+    "marketplace": "comind-dev/comind",
     "marketplaceName": "comind",
     "plugin": "comind@comind",
     "pluginName": "comind"

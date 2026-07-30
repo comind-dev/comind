@@ -222,7 +222,7 @@ Then verify the published artifact rather than trusting the upload:
 
 ```bash
 env -i HOME=$(mktemp -d) PATH="$PATH" npx -y @comind-dev/comind@latest --version
-claude plugin marketplace add oneamitj/comind
+claude plugin marketplace add comind-dev/comind
 claude plugin install comind@comind
 claude plugin list               # Status ✔ enabled
 claude plugin details comind     # Commands = the 4 in commands/comind/; Hooks = 0
