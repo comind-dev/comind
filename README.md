@@ -147,6 +147,13 @@ Slash commands are the intended interface, all inside Claude Code:
 | `/comind-lsp` | Show which language-server plugins this repo needs; install or remove them. |
 | `/comind-doctor` | Verify all five layers and report version drift. Read-only. |
 
+Autocomplete will show you `/comind:comind-init`. Claude Code namespaces every plugin command as
+`<plugin>:<command>`, and CoMind's files carry the name too, so the word lands twice. `/comind-init`
+is the shorthand, and it's what this documentation uses throughout. That's deliberate rather than
+lazy: it's also the exact name you get on the file-copy fallback, where the commands are written
+into `~/.claude/commands/` as plain user-scope files with no namespace to prefix them. One string,
+both install paths.
+
 The CLI underneath, which the slash commands invoke:
 
 | Command | Stage |

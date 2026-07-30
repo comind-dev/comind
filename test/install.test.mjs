@@ -352,6 +352,25 @@ test('plugin.json declares commands only', () => {
   assert.equal(manifest.hooks, undefined, 'declaring hooks would double-register the gate');
 });
 
+test('plugin.json and COMMAND_DIR name the same directory, and it is not empty', async () => {
+  // Two independent spellings of one path: "./commands/comind/" in plugin.json and
+  // ['commands','comind'] in lib/install-plugin.mjs. Nothing tied them together, and
+  // commandFiles() answers a missing directory with [] rather than an error, so drift
+  // between them degrades everything silently: wireCommands wires nothing,
+  // clearCopyArtifacts deletes nothing, uninstall orphans every copied command, and
+  // doctor reports `command registration PASS — file-copy (0 command(s))`, a pass it
+  // invented. Assert the two agree and that the directory actually has commands in it.
+  const manifest = JSON.parse(readFileSync(path.join(PKG, '.claude-plugin', 'plugin.json'), 'utf8'));
+  assert.equal(
+    path.resolve(PKG, manifest.commands),
+    path.join(PKG, 'commands', 'comind'),
+    'plugin.json commands path disagrees with COMMAND_DIR in lib/install-plugin.mjs',
+  );
+  // A floor, matching the convention above: a fifth command needs no test edit.
+  const { commandFiles } = await import('../lib/install-plugin.mjs');
+  assert.ok(commandFiles().length >= 4, 'commandFiles() must not silently return an empty list');
+});
+
 test('no hooks.json ships anywhere in the package', () => {
   // There is no plugin-level hooks file by design. The gate is registered
   // programmatically into the repo's .claude/settings.json, and a hooks.json at any
@@ -703,11 +722,12 @@ test('stage 1 prunes a module removed from the payload', (t) => {
   assert.equal(existsSync(stale), false);
 });
 
-test('the version stays frozen until the first release', () => {
-  // Pre-release, a bump would be meaningless: nothing is published, so no install
-  // anywhere could be upgrading from an earlier version.
+test('the version moves only in a release commit', () => {
+  // The pin exists so a bump is never a side effect of some other change. Editing
+  // this literal is the deliberate act that says "this is a release", and it has to
+  // happen alongside the three manifests the test above keeps in agreement.
   const v = JSON.parse(readFileSync(path.join(PKG, 'versions.json'), 'utf8'));
-  assert.equal(v.comind, '0.0.1-alpha.0', 'do not bump before release — see UPGRADING.md');
+  assert.equal(v.comind, '0.0.1-alpha.0', 'bump this only when releasing — see UPGRADING.md');
 });
 
 test('no migration code targets a CoMind version that never shipped', () => {

@@ -1,9 +1,5 @@
 # Onboarding
 
-> **0.0.1-alpha.0, an alpha in active development.** The commands below work against the published
-> package. To run a local checkout instead, swap `npx -y @comind-dev/comind@latest` for
-> `node <checkout>/bin/comind.js --local`.
-
 There are two paths. Read the one that describes you and skip the other.
 
 | You are… | Path | Time |
@@ -84,6 +80,9 @@ Then, in the session:
 ```
 /comind-init
 ```
+
+> Autocomplete will offer `/comind:comind-init`. Both spellings run the same command; `/comind-init`
+> is the shorthand this guide uses, and it's also the exact name on the file-copy fallback.
 
 **Everything real happens here**, and it has to. GSD onboarding maps your codebase with subagents
 and asks what the project is for. A shell script can't do that, and a `.planning/` written from

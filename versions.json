@@ -1,6 +1,6 @@
 {
   "comind": "0.0.1-alpha.0",
-  "_versionNote": "Frozen at 0.0.1-alpha.0 until the first release. Do not bump it for ordinary changes \u2014 nothing is published, so there is no version anyone could be upgrading from. It must stay valid semver: npm's registry rejects anything else, and drift detection depends on ordered comparison.",
+  "_versionNote": "This moves only in a release commit. Ordinary changes do not bump it, and a bump is never a side effect: a test pins the current number, so releasing means editing that test on purpose. It must stay valid semver \u2014 npm's registry rejects anything else, and drift detection depends on ordered comparison. See UPGRADING.md.",
   "vaultSchema": 1,
   "_note": "SINGLE SOURCE OF TRUTH for every pinned tool version. Nothing else in this repo hardcodes a version, and nothing resolves 'latest' at install time. To upgrade, see UPGRADING.md.",
   "_policyNote": "`policy` decides how strictly a version is held. \"exact\" for anything whose divergence corrupts the SHARED repo: rtk is a binary CoMind executes, gsd-core writes committed files, caveman installs hooks into ~/.claude. \"floor\" (>=) for machine-local tools whose output is derived — nobody's repo changes because a teammate has a newer graphify, and an exact pin there is a maintenance treadmill that buys nothing. Absent means exact.",
