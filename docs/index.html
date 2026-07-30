@@ -169,7 +169,7 @@
 
     <div class="stage">
       <div class="stage-n">Stage 1: install CoMind</div>
-      <pre><code>npx @comind-dev/comind   <span class="cmt"># your repo is not touched</span></code></pre>
+      <pre><code>npx -y @comind-dev/comind@latest   <span class="cmt"># your repo is not touched</span></code></pre>
       <p>
         This registers CoMind as a Claude Code plugin, which is what gets you
         <code>claude plugin update / uninstall / disable / details</code> and a real version
@@ -196,6 +196,12 @@
         Stage 2 works out on its own whether you're bootstrapping the repo or joining one a
         teammate already set up. Joining writes only machine-local files, so after it runs
         <code>git status --porcelain</code> comes back empty.
+      </p>
+      <p style="color:var(--muted);font-size:0.92rem">
+        Later, to pick up a new alpha: <code>comind update</code>, restart Claude Code, then
+        <code>/comind-init</code> once per repo. That upgrades CoMind and nothing else. The pinned
+        tool versions live in the repo's committed manifest and belong to the team, so moving them is
+        a separate reviewed commit.
       </p>
     </div>
   </div>
@@ -329,7 +335,8 @@
       <a href="https://github.com/comind-dev/comind/blob/main/ONBOARDING.md">Onboarding</a>
       <a href="https://github.com/comind-dev/comind/blob/main/UPGRADING.md">Upgrading</a>
       <a href="https://github.com/comind-dev/comind/blob/main/LICENSE">MIT</a>
-      <a href="https://www.npmjs.com/package/comind">npm</a>
+      <a href="https://www.npmjs.com/package/@comind-dev/comind">npm</a>
+      <a href="https://github.com/comind-dev/comind/releases">Releases</a>
     </div>
     <p>CoMind 0.0.1-alpha.0. An alpha, in active development.</p>
   </div>

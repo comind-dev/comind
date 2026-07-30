@@ -66,8 +66,11 @@ but you get no `update` or `uninstall`, and `comind doctor` will keep reminding 
 Verify:
 
 ```bash
-claude plugin list | grep comind      # Status: ✔ enabled
+claude plugin list | grep -A3 comind
 ```
+
+`Scope: user` and `Status: ✔ enabled`. The `-A3` matters: the id and the status are on different
+lines, so a bare `grep comind` prints the id and nothing else.
 
 ### 2. Set up the project (stage 2)
 
@@ -326,6 +329,26 @@ Neither install path resolved. Re-run stage 1, then `claude plugin list | grep c
 ### `/comind-init` isn't available
 
 Restart Claude Code. Plugins load at session start.
+
+---
+
+## Upgrading CoMind
+
+Alphas move. To pick up a new one:
+
+```bash
+comind update          # or, from inside Claude Code: claude plugin update comind@comind
+```
+
+Restart Claude Code afterwards, then run `/comind-init` once in each CoMind repo. The upgrade only
+replaces CoMind itself; `/comind-init` is what reconciles the repo against the new version, and it
+detects JOIN so nothing tracked gets rewritten.
+
+Two things this deliberately does not do. It doesn't move the pinned tool versions, because those
+live in the repo's committed `.comind/manifest.json` and belong to the team rather than to whoever
+upgraded first. See [UPGRADING.md](UPGRADING.md) for that, which is a reviewed commit. And it can't
+help you on the file-copy fallback, which has no update path at all: re-run stage 1 instead, and
+`comind update` will tell you so rather than pretending it worked.
 
 ---
 

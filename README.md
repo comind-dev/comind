@@ -1,8 +1,10 @@
 # CoMind: Collaborative Mind
 
-> **0.0.1-alpha.0 is on npm, and it's an alpha.** The install contract and the `.ai-memory/` vault
-> schema can still change between alphas, so expect to re-run `/comind-init` after an upgrade. For
-> the step-by-step version, read [ONBOARDING.md](ONBOARDING.md).
+> **0.0.1-alpha.0 is on npm as `@comind-dev/comind`, and it's an alpha.** The install contract and
+> the `.ai-memory/` vault schema can still change between alphas, so expect to re-run `/comind-init`
+> after an upgrade. [ONBOARDING.md](ONBOARDING.md) is the step-by-step version, including
+> [how to upgrade](ONBOARDING.md#upgrading-comind). There's also a
+> [site](https://comind-dev.github.io/comind/) if you want the short version first.
 
 CoMind wires five compression and discipline layers into a repo you already have, then tells you
 exactly which files to commit so the whole team works from one shared context.
