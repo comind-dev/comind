@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "comind",
+  "description": "CoMind (Collaborative Mind) — drop-in AI team collaboration framework for Claude Code. Eliminates context rot across parallel developers and cuts token usage via layered compression.",
+  "owner": {
+    "name": "CoMind",
+    "url": "https://github.com/oneamitj/comind"
+  },
+  "plugins": [
+    {
+      "name": "comind",
+      "description": "One command wires RTK, Caveman, GSD Core, graphify, and first-party LSP plugins into a Git-tracked shared brain. Run /comind-init.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

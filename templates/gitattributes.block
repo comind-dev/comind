@@ -1,0 +1,24 @@
+# Committed CoMind artifacts are generated with LF endings on every platform.
+# Without this, a Windows checkout rewrites them to CRLF and every teammate sees
+# a whole-file diff the next time anyone regenerates.
+#
+# Scoped to *.md on purpose: `.planning/` is user-authored and may hold images
+# or PDFs, and forcing text semantics on those corrupts them on checkout.
+.ai-memory/**/*.md text eol=lf
+.planning/**/*.md  text eol=lf
+.comind/manifest.json text eol=lf
+graphify-out/GRAPH_REPORT.md text eol=lf
+graphify-out/graph.json text eol=lf
+
+# graph.json is regenerated wholesale on every build, so two developers who both
+# commit a graph conflict on a file no human can resolve. graphify ships a union
+# merge driver for exactly this. `graphify hook install` would append this same
+# line itself; its own duplicate check scans the whole file and matches on
+# `<...>graph.json ... merge=graphify`, so our copy makes that append a no-op
+# rather than a second line.
+#
+# The attribute alone is inert: the driver body is machine-local git config that
+# cannot be committed. `comind setup` registers it on every machine, JOIN
+# included — without that half, git reports an unknown driver and falls back to
+# a plain conflict, which is worse than never having claimed one.
+graphify-out/graph.json merge=graphify

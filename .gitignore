@@ -1,0 +1,6 @@
+# CoMind package ignores. Nothing here is CoMind-applied — this repo develops the
+# tool but is deliberately NOT managed by it, so the gate hook and GSD phase
+# discipline do not obstruct work on CoMind itself. See README / Development.
+node_modules/
+*.tgz
+.DS_Store

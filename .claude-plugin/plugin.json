@@ -1,0 +1,24 @@
+{
+  "name": "comind",
+  "displayName": "CoMind",
+  "version": "0.0.1-alpha.0",
+  "description": "Collaborative Mind \u2014 team-shared AI context. RTK compression + Caveman output profile + GSD phase discipline + graphify knowledge graph + LSP verification for 12 languages, wired by one command.",
+  "author": {
+    "name": "CoMind",
+    "url": "https://github.com/oneamitj/comind"
+  },
+  "homepage": "https://github.com/oneamitj/comind",
+  "repository": "https://github.com/oneamitj/comind",
+  "license": "MIT",
+  "keywords": [
+    "context-engineering",
+    "token-optimization",
+    "spec-driven-development",
+    "knowledge-graph",
+    "lsp",
+    "team",
+    "claude-code"
+  ],
+  "_scopeNote": "COMMANDS ONLY, deliberately. The caveman-gsd skill and the comind-gate hook are PROJECT-scoped: `comind setup` copies them from templates/team/ into the repo's .claude/ and they are committed, so the team shares one pinned contract. Omitting them here is necessary but NOT sufficient \u2014 Claude Code auto-discovers top-level skills/ and hooks/ directories by convention regardless of this manifest, which is why neither directory exists at the package root.",
+  "commands": "./commands/comind/"
+}

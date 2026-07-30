@@ -1,0 +1,163 @@
+{
+  "comind": "0.0.1-alpha.0",
+  "_versionNote": "Frozen at 0.0.1-alpha.0 until the first release. Do not bump it for ordinary changes \u2014 nothing is published, so there is no version anyone could be upgrading from. It must stay valid semver: npm's registry rejects anything else, and drift detection depends on ordered comparison.",
+  "vaultSchema": 1,
+  "_note": "SINGLE SOURCE OF TRUTH for every pinned tool version. Nothing else in this repo hardcodes a version, and nothing resolves 'latest' at install time. To upgrade, see UPGRADING.md.",
+  "_policyNote": "`policy` decides how strictly a version is held. \"exact\" for anything whose divergence corrupts the SHARED repo: rtk is a binary CoMind executes, gsd-core writes committed files, caveman installs hooks into ~/.claude. \"floor\" (>=) for machine-local tools whose output is derived — nobody's repo changes because a teammate has a newer graphify, and an exact pin there is a maintenance treadmill that buys nothing. Absent means exact.",
+  "distribution": {
+    "_note": "How CoMind installs itself. The plugin path is primary because it gives uninstall, update, enable/disable, and a version registry for free; the file-copy fallback exists only for machines without the `claude` CLI. `marketplace add` accepts a URL, a path, or a GitHub repo: `--local` installs from this checkout (PKG_ROOT) and COMIND_MARKETPLACE overrides the source for a fork.",
+    "marketplace": "oneamitj/comind",
+    "marketplaceName": "comind",
+    "plugin": "comind@comind",
+    "pluginName": "comind"
+  },
+  "tools": {
+    "rtk": {
+      "version": "0.44.0",
+      "policy": "exact",
+      "source": "github-release",
+      "repo": "rtk-ai/rtk",
+      "tagPrefix": "v",
+      "verify": "checksums.txt",
+      "assets": {
+        "darwin-arm64": "rtk-aarch64-apple-darwin.tar.gz",
+        "darwin-x64": "rtk-x86_64-apple-darwin.tar.gz",
+        "linux-x64": "rtk-x86_64-unknown-linux-musl.tar.gz",
+        "linux-arm64": "rtk-aarch64-unknown-linux-gnu.tar.gz",
+        "win32-x64": "rtk-x86_64-pc-windows-msvc.zip"
+      },
+      "binName": "rtk",
+      "fallback": "cargo install --git https://github.com/rtk-ai/rtk --tag v0.44.0"
+    },
+    "caveman": {
+      "version": "1.9.1",
+      "policy": "exact",
+      "source": "github-ref",
+      "repo": "JuliusBrussee/caveman",
+      "ref": "0d95a81d35a9f2d123a5e9430d1cfc43d55f1bb0",
+      "refTag": "v1.9.1",
+      "plugin": "caveman@caveman",
+      "marketplace": "JuliusBrussee/caveman",
+      "_note": "The COMMIT is the pin, not the tag. v1.9.1 = 0d95a81. Git tags are movable and the release reports \"immutable\": false, so a tag pin is a weaker promise than it looks. bin/install.js at this ref self-pins (PINNED_REF) and SHA-256-verifies every hook it downloads against the integrity manifest published at that ref, refusing to install on mismatch.",
+      "_whyNotThePlugin": "`claude plugin install` accepts no version, so the plugin path cannot pin. It stays as the fallback for machines without npx. The previous fallback was WORSE than unpinned: it fetched install.sh from the v1.9.1 tag, but that script execs a github package spec carrying NO #ref, which npm resolves to the default branch — so the \"pinned\" fallback installed main."
+    },
+    "gsd-core": {
+      "version": "1.8.0",
+      "policy": "exact",
+      "source": "npm",
+      "pkg": "@opengsd/gsd-core",
+      "installArgs": [
+        "--claude",
+        "--local"
+      ]
+    },
+    "graphifyy": {
+      "version": "0.9.28",
+      "policy": "floor",
+      "source": "pypi",
+      "pkg": "graphifyy",
+      "binName": "graphify"
+    },
+    "typescript": {
+      "policy": "floor",
+      "version": "7.0.2",
+      "source": "npm",
+      "pkg": "typescript",
+      "binName": "tsc",
+      "_note": "binName is required, not optional. Without it the installed-version probe cannot run, and the LSP layer treats the package as permanently missing \u2014 which made `npm install -g` re-run on every single setup."
+    },
+    "typescript-language-server": {
+      "policy": "floor",
+      "version": "5.3.0",
+      "source": "npm",
+      "pkg": "typescript-language-server",
+      "binName": "typescript-language-server"
+    },
+    "pyright": {
+      "policy": "floor",
+      "version": "1.1.411",
+      "source": "npm",
+      "pkg": "pyright",
+      "binName": "pyright-langserver"
+    }
+  },
+  "lsp": {
+    "_note": "Anthropic's first-party LSP plugins, from the auto-registered official marketplace. These replaced mcp-language-server, which was source-only (no release binaries at v0.1.0 or v0.1.1), required a Go toolchain, and could not report its own version. A plugin wraps a server binary but never ships one, so `server.bin` is what doctor probes and `server.manual` is the one line a developer runs when it is absent.",
+    "_pinNote": "Claude Code plugin installs cannot pin a version, so no version is recorded here. What actually determines diagnostics is the SERVER, and for the two npm-installable ones that stays pinned in `tools` above.",
+    "marketplace": "claude-plugins-official",
+    "languages": {
+      "typescript": {
+        "plugin": "typescript-lsp",
+        "markers": ["tsconfig.json", "jsconfig.json", "package.json"],
+        "exts": [".ts", ".tsx", ".mts", ".cts"],
+        "server": { "bin": "typescript-language-server", "tools": ["typescript", "typescript-language-server"] }
+      },
+      "python": {
+        "plugin": "pyright-lsp",
+        "markers": ["pyproject.toml", "setup.py", "requirements.txt", "Pipfile", "setup.cfg"],
+        "exts": [".py"],
+        "server": { "bin": "pyright-langserver", "altBin": "pyright", "tools": ["pyright"] }
+      },
+      "go": {
+        "plugin": "gopls-lsp",
+        "markers": ["go.mod", "go.work"],
+        "exts": [".go"],
+        "server": { "bin": "gopls", "manual": "go install golang.org/x/tools/gopls@latest" }
+      },
+      "rust": {
+        "plugin": "rust-analyzer-lsp",
+        "markers": ["Cargo.toml"],
+        "exts": [".rs"],
+        "server": { "bin": "rust-analyzer", "manual": "rustup component add rust-analyzer" }
+      },
+      "csharp": {
+        "plugin": "csharp-lsp",
+        "markers": ["global.json"],
+        "exts": [".cs", ".csproj", ".sln"],
+        "server": { "bin": "csharp-ls", "manual": "dotnet tool install -g csharp-ls" }
+      },
+      "java": {
+        "plugin": "jdtls-lsp",
+        "markers": ["pom.xml", "build.gradle"],
+        "exts": [".java"],
+        "server": { "bin": "jdtls", "manual": "see https://github.com/eclipse-jdtls/eclipse.jdt.ls — no single-command install" }
+      },
+      "php": {
+        "plugin": "php-lsp",
+        "markers": ["composer.json"],
+        "exts": [".php"],
+        "server": { "bin": "intelephense", "manual": "npm i -g intelephense" }
+      },
+      "c": {
+        "plugin": "clangd-lsp",
+        "markers": ["CMakeLists.txt", "compile_commands.json", "Makefile"],
+        "exts": [".c", ".h", ".cc", ".cpp", ".hpp", ".cxx"],
+        "server": { "bin": "clangd", "manual": "install LLVM/clangd from your package manager" }
+      },
+      "kotlin": {
+        "plugin": "kotlin-lsp",
+        "markers": ["build.gradle.kts", "settings.gradle.kts"],
+        "exts": [".kt", ".kts"],
+        "server": { "bin": "kotlin-lsp", "manual": "see https://github.com/Kotlin/kotlin-lsp" }
+      },
+      "swift": {
+        "plugin": "swift-lsp",
+        "markers": ["Package.swift"],
+        "exts": [".swift"],
+        "server": { "bin": "sourcekit-lsp", "manual": "ships with the Swift toolchain / Xcode" }
+      },
+      "lua": {
+        "plugin": "lua-lsp",
+        "markers": [".luarc.json"],
+        "exts": [".lua"],
+        "server": { "bin": "lua-language-server", "manual": "see https://github.com/LuaLS/lua-language-server" }
+      },
+      "ruby": {
+        "plugin": "ruby-lsp",
+        "markers": ["Gemfile", ".ruby-version"],
+        "exts": [".rb"],
+        "server": { "bin": "ruby-lsp", "manual": "gem install ruby-lsp" }
+      }
+    }
+  }
+}

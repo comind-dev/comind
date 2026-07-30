@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoMind: team-shared AI context for Claude Code</title>
+<meta name="description" content="CoMind wires five compression and discipline layers into a repo you already have, then tells you exactly which files to commit so the whole team works from one shared context.">
+<meta property="og:title" content="CoMind: Collaborative Mind">
+<meta property="og:description" content="Five compression and discipline layers, wired into one repo, shared through Git.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>">
+<style>
+  :root {
+    --bg: #fdfdfc;
+    --fg: #1a1a18;
+    --muted: #6b6b66;
+    --faint: #9a9a94;
+    --rule: #e6e5e1;
+    --code-bg: #f4f3f0;
+    --accent: #2f6f4f;
+    --max: 46rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131312;
+      --fg: #e8e7e3;
+      --muted: #9b9a94;
+      --faint: #6e6d68;
+      --rule: #2a2a27;
+      --code-bg: #1d1d1b;
+      --accent: #7fbf9b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131312; --fg: #e8e7e3; --muted: #9b9a94; --faint: #6e6d68;
+    --rule: #2a2a27; --code-bg: #1d1d1b; --accent: #7fbf9b;
+  }
+  :root[data-theme="light"] {
+    --bg: #fdfdfc; --fg: #1a1a18; --muted: #6b6b66; --faint: #9a9a94;
+    --rule: #e6e5e1; --code-bg: #f4f3f0; --accent: #2f6f4f;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
+
+  code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  code { font-size: 0.875em; background: var(--code-bg); padding: 0.12em 0.36em; border-radius: 3px; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin: 0.9rem 0;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  .cmt { color: var(--faint); }
+
+  a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); }
+  a:hover { border-bottom-color: var(--accent); color: var(--accent); }
+
+  header { padding: 5rem 0 3rem; border-bottom: 1px solid var(--rule); }
+  h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 0.4rem; }
+  h1 span { color: var(--faint); font-weight: 400; }
+  .tagline { color: var(--muted); font-size: 1.05rem; margin: 0 0 1.6rem; max-width: 34rem; }
+
+  .badge {
+    display: inline-block; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid currentColor; border-radius: 2px;
+    padding: 0.16rem 0.44rem; margin-bottom: 1.2rem;
+  }
+  .note {
+    font-size: 0.9rem; color: var(--muted); border-left: 2px solid var(--rule);
+    padding-left: 1rem; margin: 1.4rem 0;
+  }
+
+  section { padding: 3rem 0; border-bottom: 1px solid var(--rule); }
+  h2 {
+    font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--faint); margin: 0 0 1.4rem;
+  }
+  h3 { font-size: 1rem; font-weight: 600; margin: 2rem 0 0.5rem; }
+  h3:first-of-type { margin-top: 0; }
+  p { margin: 0 0 1rem; }
+  p:last-child { margin-bottom: 0; }
+  .lead { font-size: 1.05rem; }
+
+  .rows { border-top: 1px solid var(--rule); }
+  .row { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.5rem; padding: 0.95rem 0; border-bottom: 1px solid var(--rule); }
+  .row > dt { color: var(--muted); font-size: 0.86rem; padding-top: 0.1rem; }
+  .row > dd { margin: 0; font-size: 0.94rem; }
+  .row > dd small { display: block; color: var(--muted); font-size: 0.84rem; margin-top: 0.2rem; }
+  @media (max-width: 34rem) {
+    .row { grid-template-columns: 1fr; gap: 0.3rem; }
+    .row > dt { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--faint); }
+  }
+
+  .stage { margin-bottom: 2.4rem; }
+  .stage:last-child { margin-bottom: 0; }
+  .stage-n { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media (max-width: 40rem) { .cols { grid-template-columns: 1fr; gap: 1.6rem; } }
+  .cols h3 { margin-top: 0; }
+  .filelist { font-size: 0.8rem; line-height: 1.75; color: var(--muted); margin: 0; }
+  .filelist b { color: var(--fg); font-weight: 500; }
+
+  ul { margin: 0 0 1rem; padding-left: 1.1rem; }
+  li { margin-bottom: 0.35rem; }
+  li:last-child { margin-bottom: 0; }
+
+  footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.86rem; }
+  footer a { border-bottom-color: transparent; }
+  footer a:hover { border-bottom-color: var(--accent); }
+  .foot-links { display: flex; gap: 1.4rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="badge">0.0.1-alpha.0 · unreleased</div>
+    <h1>CoMind<span>: Collaborative Mind</span></h1>
+    <p class="tagline">
+      Five compression and discipline layers, wired into a repo you already have. Then CoMind tells
+      you exactly which files to commit, so your whole team works from one shared context.
+    </p>
+    <p class="note">
+      Nothing is published to npm yet and the install contract is still moving. Install from a
+      checkout: <code>node bin/comind.js --local</code>. Everything below describes what the tool
+      does today, not a roadmap.
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The problem</h2>
+    <p class="lead">
+      Put three developers on one repo with Claude Code and you get three private contexts that
+      drift apart from day one.
+    </p>
+    <p>
+      Every session re-derives the same architecture facts. Verbose tool output eats the budget.
+      Nothing survives the session: no shared spec memory, no deterministic verification, nothing
+      compressed.
+    </p>
+    <p>
+      CoMind is glue. It reimplements none of the tools it uses. It installs them at pinned
+      versions, wires them so they compose instead of colliding, and manages the Git layout that
+      makes the result shared.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Two stages, on purpose</h2>
+
+    <div class="stage">
+      <div class="stage-n">Stage 1: install CoMind</div>
+      <pre><code>npx comind   <span class="cmt"># your repo is not touched</span></code></pre>
+      <p>
+        This registers CoMind as a Claude Code plugin, which is what gets you
+        <code>claude plugin update / uninstall / disable / details</code> and a real version
+        registry. Four slash commands show up, costing roughly 200 always-on tokens. It installs no
+        tools, and nothing in your repo or your config changes. Safe to run again and again.
+      </p>
+      <p style="color:var(--muted);font-size:0.92rem">
+        If the <code>claude</code> CLI isn't on PATH it falls back to copying into
+        <code>~/.claude/comind/pkg/</code>. That works. It also has no update or uninstall path, and
+        <code>comind doctor</code> says so rather than pretending otherwise.
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="stage-n">Stage 2: set up the project</div>
+      <pre><code>/comind-init   <span class="cmt"># run inside a Claude Code session</span></code></pre>
+      <p>
+        All the real work happens here, and it has to. Project setup needs a reasoning agent: GSD
+        onboarding maps the codebase with subagents and asks you what the project is actually for.
+        A shell script can do neither. And a <code>.planning/</code> written from a script's
+        assumptions is precisely the context rot CoMind exists to prevent.
+      </p>
+      <p>
+        Stage 2 works out on its own whether you're bootstrapping the repo or joining one a
+        teammate already set up. Joining writes only machine-local files, so after it runs
+        <code>git status --porcelain</code> comes back empty.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The five layers</h2>
+    <dl class="rows">
+      <div class="row">
+        <dt>Input compression</dt>
+        <dd><a href="https://github.com/rtk-ai/rtk">RTK</a>
+          <small>Rewrites Bash calls (<code>git status</code> → <code>rtk git status</code>) so verbose output is filtered before it reaches context.</small></dd>
+      </div>
+      <div class="row">
+        <dt>Output compression</dt>
+        <dd><a href="https://github.com/JuliusBrussee/caveman">Caveman</a>
+          <small>Cuts Claude's own output tokens.</small></dd>
+      </div>
+      <div class="row">
+        <dt>Phase discipline</dt>
+        <dd><a href="https://github.com/open-gsd/gsd-core">GSD Core</a>
+          <small>Discuss → Plan → Execute → Verify → Ship, with heavy work in fresh-context subagents.</small></dd>
+      </div>
+      <div class="row">
+        <dt>Shared memory</dt>
+        <dd>graphify + <code>.ai-memory/</code>
+          <small>A queryable knowledge graph, exported as a Git-tracked Obsidian vault. A clone can query it without paying to rebuild.</small></dd>
+      </div>
+      <div class="row">
+        <dt>Verification</dt>
+        <dd><a href="https://claude.com/plugins/typescript-lsp">Anthropic's LSP plugins</a>
+          <small>Real language-server diagnostics for the languages this repo actually has. 12 are supported, and only the ones it contains get installed.</small></dd>
+      </div>
+    </dl>
+
+    <p class="note">
+      <strong>One of these five is enforced. The other four are instructions.</strong> The gate hook
+      and the <code>permissions.deny</code> rules are the only parts Claude Code cannot ignore.
+      Phase discipline, retrieval order and verification order all live in a skill file, and they
+      work only if the model follows them. Worth knowing before you rely on any of it.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>What gets committed</h2>
+    <p>
+      The split is the whole design. It's why setup is safe to re-run, and why a teammate joining
+      doesn't dirty the repo.
+    </p>
+    <div class="cols" style="margin-top:1.6rem">
+      <div>
+        <h3>Shared, in Git</h3>
+        <p class="filelist">
+          <b>.comind/manifest.json</b> pinned versions + enabled layers<br>
+          <b>.planning/</b> specs, phases, roadmap<br>
+          <b>.ai-memory/</b> derived Obsidian vault<br>
+          <b>.claude/</b> gate hook, skills, commands, agents, the GSD engine and its scripts<br>
+          <b>graphify-out/</b> the queryable graph and its sidecars<br>
+          <b>.gitignore .gitattributes</b> managed blocks
+        </p>
+      </div>
+      <div>
+        <h3>Yours alone</h3>
+        <p class="filelist">
+          <b>.comind/state/</b> session counters, bypass log<br>
+          <b>graphify-out/graph.html</b> free local re-render<br>
+          <b>graphify-out/cache/</b> extraction cache<br>
+          <b>*.local.md</b> scratch notes, never reach the vault<br>
+          <b>~/.claude/comind/bin/</b> the rtk binary, shared per machine
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Commands</h2>
+    <p style="color:var(--muted);font-size:0.92rem;margin-bottom:1.2rem">
+      Slash commands are the intended interface. The CLI underneath is what they invoke.
+    </p>
+    <dl class="rows">
+      <div class="row"><dt><code>/comind-init</code></dt><dd>Set up or join a repo. Owns the whole flow: tools → hooks → onboarding → graph → vault → git informer.</dd></div>
+      <div class="row"><dt><code>/comind-sync</code></dt><dd>After a pull or a shipped phase. Rebuilds the graph, regenerates the vault.</dd></div>
+      <div class="row"><dt><code>/comind-lsp</code></dt><dd>Show which language-server plugins this repo needs; install or remove them.</dd></div>
+      <div class="row"><dt><code>/comind-doctor</code></dt><dd>Verify all five layers and report version drift. Read-only.</dd></div>
+    </dl>
+    <p style="margin-top:1.2rem;color:var(--muted);font-size:0.92rem">
+      Add <code>--dry-run</code> to any CLI command to see every action without writing anything.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Versions are pinned where it matters</h2>
+    <p>
+      <code>versions.json</code> is the single source of truth, and each tool declares how
+      strictly it is held. Nothing resolves <code>latest</code> at install time.
+    </p>
+    <ul style="margin-top:1rem">
+      <li><strong>Exact</strong> for rtk, gsd-core and caveman. Drift there corrupts the <em>shared</em> repo. rtk is a binary CoMind executes, gsd-core writes committed files, caveman installs hooks into <code>~/.claude</code>.</li>
+      <li><strong>Floor</strong> (<code>&gt;=</code>) for graphify and the LSP servers. Machine-local, derived output. Nobody's repo changes because a teammate has a newer graphify.</li>
+    </ul>
+    <p style="color:var(--muted);font-size:0.92rem">
+      RTK is fetched from its GitHub release and verified against that release's own
+      <code>checksums.txt</code>. Caveman installs from a pinned commit, because tags move.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Requirements</h2>
+    <dl class="rows">
+      <div class="row"><dt>Node</dt><dd>≥ 18. Everything runs on Node built-ins, so there are <strong>zero npm dependencies</strong>.</dd></div>
+      <div class="row"><dt>git</dt><dd>The whole point is sharing context through your repo.</dd></div>
+      <div class="row"><dt>Platforms</dt><dd>macOS and Linux, tested.<small><strong>Windows is not supported yet.</strong> The win32 code paths exist and their pure logic is unit-tested, but CoMind has never been run end to end on a real Windows host. Treat it as unverified. It may work; if it doesn't, that's expected rather than a surprise.</small></dd></div>
+      <div class="row"><dt>Optional</dt><dd>The <code>claude</code> CLI, <code>python3</code> or <code>uv</code>, and a language server per language. Missing one skips that layer and prints the fix. It never fails the whole setup.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="https://github.com/oneamitj/comind">GitHub</a>
+      <a href="https://github.com/oneamitj/comind/blob/main/ONBOARDING.md">Onboarding</a>
+      <a href="https://github.com/oneamitj/comind/blob/main/UPGRADING.md">Upgrading</a>
+      <a href="https://github.com/oneamitj/comind/blob/main/LICENSE">MIT</a>
+    </div>
+    <p>CoMind 0.0.1-alpha.0. Unreleased, in active development.</p>
+  </div>
+</footer>
+
+</body>
+</html>

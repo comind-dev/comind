@@ -1,0 +1,39 @@
+{
+  "name": "comind",
+  "version": "0.0.1-alpha.0",
+  "description": "CoMind (Collaborative Mind) \u2014 drop-in AI team collaboration framework. One command wires RTK compression, Caveman output profile, GSD phase discipline, graphify knowledge graph, and first-party LSP verification for 12 languages into a shared, Git-tracked brain.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "comind": "bin/comind.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "commands/",
+    "templates/",
+    "versions.json",
+    "ONBOARDING.md",
+    "UPGRADING.md",
+    "README.md"
+  ],
+  "keywords": [
+    "claude-code",
+    "ai",
+    "context-engineering",
+    "token-optimization",
+    "spec-driven-development",
+    "knowledge-graph",
+    "lsp",
+    "obsidian",
+    "team"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "init": "node bin/comind.js",
+    "doctor": "node bin/comind.js doctor"
+  }
+}

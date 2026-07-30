@@ -1,0 +1,18 @@
+# CoMind: keep every managed file LF so Windows and macOS teammates produce
+# byte-identical diffs on the shared .planning/ and .ai-memory/ trees.
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.mjs  text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+
+# PowerShell tolerates LF; pinning it keeps the wrapper diff-clean too.
+*.ps1  text eol=lf
+
+# Never normalize these.
+*.png  binary
+*.jpg  binary
+*.gz   binary
+*.zip  binary
